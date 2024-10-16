@@ -53,9 +53,9 @@ OCR1A = MIN_POS;
 OCR1B = MAX_POS;
 sei();
 while (1)
-{
+    {
     Pos1 = (read_adc_H(3) << 8) | (read_adc_L);
     OCR1A = Pos1;
     OCR1B = Pos2;
-}
+    }
 }
