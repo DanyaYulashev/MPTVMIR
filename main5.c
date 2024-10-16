@@ -56,8 +56,16 @@ int main(void)
     sei();
     while(1)
     {
-        // if(dist <= 10) dist = 10;
-        // if(dist >= 100) dist = 100;
+        PORTE |= (1 << 6);
+        _delay_us(15);
+        PORTE &= ~(1 << 6);
+        delay_ms(30);
+        
+        dist *= 1.57;
 
+        if(dist <= 10) dist = 10;
+        if(dist >= 100) dist = 100;
+
+        
     }
 }
