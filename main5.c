@@ -62,10 +62,26 @@ int main(void)
         delay_ms(30);
         
         dist *= 1.57;
-
-        if(dist <= 10) dist = 10;
-        if(dist >= 100) dist = 100;
-
-        
+        if(dist <= 10 || dist >= 100)
+        {
+            if(dist <= 10)
+            {
+                dist = 10; OCR3AL = 255; OCR3BL = 255; OCR3CL = 255;
+            }
+            if(dist >= 100)
+            {
+                dist = 100; OCR3AL = 255; OCR3BL = 0; OCR3CL = 0;
+            }
+        }
+        else
+        {
+            OCR3AL = 255-dist*2.55; OCR3BL = dist*2.55; OCR3CL = dist*2.55;
+        }
+        for(uint8_t i = 1; i <=5; i++)
+        {
+            PORTA |= (1 << i);
+            _delay_ms(1);
+            PORTC = led[digit(dist,i)];
+        }
     }
 }
