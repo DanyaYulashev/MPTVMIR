@@ -75,64 +75,62 @@ int main(void)
     // Инициализация АЦП
     ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1); //| _BV(ADPS0);
     // Инициализация таймера 1. Быстрая ШИМ 8 бит
-    TCCR1A = _BV(COM1A1) | _BV(WGM10);
+    TCCR1A = _BV(COM1A1) | _BV(WGM10) | _BV(WGM11);
     TCCR1B = _BV(WGM12) | _BV(CS10);
     /* переменные магнитного поля, ошибки регулирования и
     управления (здесь будут ещё переменные, например,
     значение ошибки регулирования на предыдущем шаге)*/
-    int16_t field, error = 0, ref, control, integral = 0, derivative = 0, last_error = 0;
-
-    PORTG &= ~(1 << 3);
-    //PORTG = (1 << 3);
-    OCR1AL = 0;
+    int16_t field, error = 0, ref, integral = 0, derivative = 0, last_error = 0;
+    float control;
+    
     while (1)
     {
-        // // АЦП 8 бит и предделитель на 128
-        // ref = (readAdc(3) + readAdc(3) + readAdc(3)) / 3;
-        // /* здесь (мб) должно быть ограничение задания, чтоб
-        // шайба не улетала*/
-        // field = (readAdc(1) + readAdc(1) + readAdc(1)) / 3;
+        // АЦП 8 бит и предделитель на 128
+        ref = (readAdc(3) + readAdc(3) + readAdc(3)) / 3;
+        /* здесь (мб) должно быть ограничение задания, чтоб
+        шайба не улетала*/
+        field = (readAdc(1) + readAdc(1) + readAdc(1)) / 3;
         
-        // error = ref - field;
-        // derivative = (error - last_error);
-        // last_error = error;
-        // integral += error;
-        // control = error * 2 + integral / 1000 + derivative * 10;
-        // if (control > 255) // ограничение управления сверху
-        //     control = 255;
-        // if (control < -255) // ограничение управления снизу
-        //     control = -255;
-        // if(field >= 100)
-        // {
-        //     PORTG &= ~(1 << 3);
-        //     OCR1AL = 0;
-        // }
-        // else
-        //     if (control >= 0)
-        //     { // установка сигнала управления
-        //         PORTG &= ~(1 << 3);
-        //         OCR1AL = (uint8_t)(control);
-        //     }
-        //     else
-        //     {
-        //         PORTG |= (1 << 3);
-        //         OCR1AL = (uint8_t)(-control);
-        //     }
-        // for(uint8_t i = 1; i <= 3; i++)
-		// {
-		// 	lcdData(Digit(field,i)+'0');
-		// }
-        // lcdData(' ');
-        // for(uint8_t i = 1; i <= 3; i++)
-		// {
-		// 	lcdData(Digit(ref,i)+'0');
-		// }
-        // lcdData(' ');
-        // for(uint8_t i = 1; i <= 3; i++)
-		// {
-		// 	lcdData(Digit(control,i)+'0');
-		// }
-        // _delay_ms(50);
-        // lcdCmd(0x01);
+        error = 80 - field;
+        derivative = (error - last_error);
+        last_error = error;
+        integral += error;
+        control = error * 10.6 + integral * 0 + derivative * 1.9;
+        if (control > 1023) // ограничение управления сверху
+            control = 1023;
+        if (control < -1023) // ограничение управления снизу
+            control = -1023;
+        if(field >= 100)
+        {
+            PORTG |= (1 << 3);
+            OCR1A = 0;
+        }
+        else
+            if (control >= 0)
+            { // установка сигнала управления
+                PORTG &= ~(1 << 3);
+                OCR1A = (uint16_t)(control);
+            }
+            else
+            {
+                PORTG |= (1 << 3);
+                OCR1A = (uint16_t)(-control);
+            }
+        for(uint8_t i = 1; i <= 3; i++)
+		{
+			lcdData(Digit(field,i)+'0');
+		}
+        lcdData(' ');
+        for(uint8_t i = 1; i <= 3; i++)
+		{
+			lcdData(Digit(80,i)+'0');
+		}
+        lcdData(' ');
+        for(uint8_t i = 1; i <= 3; i++)
+		{
+			lcdData(Digit(control,i)+'0');
+		}
+        _delay_ms(50);
+        lcdCmd(0x01);
     }
 }
