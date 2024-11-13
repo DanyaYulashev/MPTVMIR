@@ -95,18 +95,18 @@ int main(void)
         derivative = (error - last_error);
         last_error = error;
         integral += error;
-        control = error * 10.6 + integral * 0 + derivative * 1.9;
+        control = error * 13.77 + integral * 0.0000125 + derivative * 195.50;
         if (control > 1023) // ограничение управления сверху
             control = 1023;
         if (control < -1023) // ограничение управления снизу
             control = -1023;
-        if(field >= 100)
+        /*if(field >= 100)
         {
             PORTG |= (1 << 3);
             OCR1A = 0;
-        }
+        }*/
         else
-            if (control >= 0)
+            if (control >= 0.00)
             { // установка сигнала управления
                 PORTG &= ~(1 << 3);
                 OCR1A = (uint16_t)(control);
@@ -116,7 +116,7 @@ int main(void)
                 PORTG |= (1 << 3);
                 OCR1A = (uint16_t)(-control);
             }
-        for(uint8_t i = 1; i <= 3; i++)
+        /*for(uint8_t i = 1; i <= 3; i++)
 		{
 			lcdData(Digit(field,i)+'0');
 		}
@@ -124,13 +124,13 @@ int main(void)
         for(uint8_t i = 1; i <= 3; i++)
 		{
 			lcdData(Digit(80,i)+'0');
-		}
+		}*/
         lcdData(' ');
         for(uint8_t i = 1; i <= 3; i++)
 		{
 			lcdData(Digit(control,i)+'0');
 		}
-        _delay_ms(50);
+        //_delay_ms(50);
         lcdCmd(0x01);
     }
 }
