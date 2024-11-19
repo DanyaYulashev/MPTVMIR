@@ -45,7 +45,7 @@ int main(void)
     matrInit(DEV_ADDR);
     while (1)
     {
-        for(uint8_t i = 0; i < 17; i++)
+        for(uint8_t i = 0; i < 25; i++)
         {
             matrDrawPict(DEV_ADDR, pict[i]);
             _delay_ms(300);
