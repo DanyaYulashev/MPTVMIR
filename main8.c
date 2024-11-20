@@ -20,57 +20,6 @@ uint8_t readAdc(uint8_t channel)
     return ADCH;
 }
 
-uint8_t Digit(uint16_t d, uint8_t m)
-{
-    uint8_t i = 3, a;
-    while (i)
-    {
-        a = d % 10;
-        if (i-- == m)
-            break;
-        d /= 10;
-    }
-    return (a);
-}
-
-void lcdCmd(uint8_t cmd)
-{                                   // посыл команды на экран
-    DDRC = 0xFF;                    // все разряды PORTC на выход
-    DDRD |= ((1 << E) | (1 << RS)); // разряды PORTD на выход
-    PORTD &= ~(1 << RS);            // выбор регистра команд RS=0
-    PORTC = cmd;                    // записать команду в порт PORTC
-    PORTD |= (1 << E);              // \ сформировать на
-    _delay_us(5);                   // | выводе E строб 1-0
-    PORTD &= ~(1 << E);             // / передачи команды
-    _delay_ms(10);                  // задержка для завершения записи
-}
-
-void lcdInit(void)
-{                                   // инициализация (ВКЛ) экрана
-    DDRC = 0xFF;                    // все разряды PORTC на выход
-    DDRD |= ((1 << E) | (1 << RS)); // разряды PORTD на выход
-    _delay_ms(100);                 // задержка для установления питания
-    lcdCmd(0x30);                   // \ вывод
-    lcdCmd(0x30);                   // | трех
-    lcdCmd(0x30);                   // / команд 0x30
-    lcdCmd(0x38);                   // 8 разр.шина, 2 строки, 5 × 7 точек
-    lcdCmd(0x0C);                   // включить ЖКИ
-    lcdCmd(0x06);                   // инкремент курсора, без сдвига экрана
-    lcdCmd(0x01);                   // очистить экран, курсор в начало
-}
-
-void lcdData(uint8_t data)
-{ // посыл данных на экран
-    DDRC = 0xFF;
-    DDRD |= ((1 << E) | (1 << RS));
-    PORTD |= (1 << RS);
-    PORTC = data;
-    PORTD |= (1 << E);
-    _delay_us(5);
-    PORTD &= ~(1 << E);
-    _delay_ms(1);
-}
-
 int main(void)
 {
     // Инициализация портов ввода/вывода
