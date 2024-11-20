@@ -5,8 +5,6 @@ uint8_t cashe = 0;
 #define _BV(b) (1 << (b))
 #define MUX (_BV(REFS0))
 #define BIT_IS_CLEAR(Reg, b) ((Reg & _BV(b)) == 0)
-#define E 6
-#define RS 7
 
 uint8_t readAdc(uint8_t channel)
 {
